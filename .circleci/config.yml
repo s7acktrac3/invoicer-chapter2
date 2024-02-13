@@ -6,6 +6,10 @@ jobs:
   working_directory: /go/src/github.com/Securing-DevOps/invoicer-chapter2
   docker:
    - image: circleci/golang:1.10
+  resource_class: medium
+  environment:
+   CUSTOM_PROJECT_USERNAME: "s7acktrac3"
+   CUSTOM_PROJECT_REPONAME: "invoicer-chapter2"
   steps:
    - checkout
    - setup_remote_docker
@@ -13,8 +17,8 @@ jobs:
    - run: 
       name: Setup environment
       command: |
-       gb="/src/github.com/${CIRCLE_PROJECT_USERNAME}";
-       if [ ${CIRCLE_PROJECT_USERNAME} == 'Securing-DevOps' ]; then
+       gb="/src/github.com/${CUSTOM_PROJECT_USERNAME}";
+       if [ ${CUSTOM_PROJECT_USERNAME} == 'Securing-DevOps' ]; then
          dr="securingdevops"
        else
          dr=$DOCKER_USER
@@ -31,18 +35,18 @@ jobs:
       name: Testing application
       command: |
           go test \
-          github.com/${CIRCLE_PROJECT_USERNAME}/${CIRCLE_PROJECT_REPONAME}
+          github.com/${CUSTOM_PROJECT_USERNAME}/${CUSTOM_PROJECT_REPONAME}
 
    - deploy:
        command: |
          if [ "${CIRCLE_BRANCH}" == "master" ]; then
            docker login -u ${DOCKER_USER} -p ${DOCKER_PASS};
            go install --ldflags '-extldflags "-static"' \
-           github.com/${CIRCLE_PROJECT_USERNAME}/${CIRCLE_PROJECT_REPONAME};
+           github.com/${CUSTOM_PROJECT_USERNAME}/${CUSTOM_PROJECT_REPONAME};
            mkdir bin;
-           cp "$GOPATH_HEAD/bin/${CIRCLE_PROJECT_REPONAME}" bin/invoicer;
-           docker build -t ${DOCKER_REPO}/${CIRCLE_PROJECT_REPONAME} .;
+           cp "$GOPATH_HEAD/bin/${CUSTOM_PROJECT_REPONAME}" bin/invoicer;
+           docker build -t ${DOCKER_REPO}/${CUSTOM_PROJECT_REPONAME} .;
            docker images --no-trunc | awk '/^app/ {print $3}' | \
              sudo tee $CIRCLE_ARTIFACTS/docker-image-shasum256.txt;
-           docker push ${DOCKER_REPO}/${CIRCLE_PROJECT_REPONAME};
+           docker push ${DOCKER_REPO}/${CUSTOM_PROJECT_REPONAME};
          fi
