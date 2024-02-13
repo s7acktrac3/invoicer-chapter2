@@ -36,5 +36,5 @@ jobs:
         command: |
           if [ "${CIRCLE_BRANCH}" == "master" ]; then
               docker login -u ${DOCKER_USER} -p ${DOCKER_PASS};
-              docker push ${DOCKER_REPO}/${CIRCLE_PROJECT_REPONAME};
+              docker push ${DOCKER_REPO}/invoicer2;
           fi
