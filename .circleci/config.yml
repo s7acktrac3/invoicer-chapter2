@@ -23,8 +23,8 @@ jobs:
         command: |
           go install --ldflags '-extldflags "-static"' github.com/s7acktrac3/invoicer-chapter2;
           [ ! -e bin ] && mkdir bin;
-          cp "${GOPATH_HEAD}/bin/invoicer-chapter2" bin/invoicer-chapter2;
-          docker build -t ${DOCKER_REPO}/invoicer-chapter2 .;
+          cp "${GOPATH_HEAD}/bin/invoicer-chapter2" bin/invoicer;
+          docker build -t ${DOCKER_REPO}/invoicer2-chapter2 .;
     - run:
         name: Testing application
         command: |
@@ -32,8 +32,9 @@ jobs:
             github.com/s7acktrac3/invoicer-chapter2
 
     - deploy:
+        # Push application container to dockerhub
         command: |
           if [ "${CIRCLE_BRANCH}" == "master" ]; then
               docker login -u ${DOCKER_USER} -p ${DOCKER_PASS};
-              docker push ${DOCKER_REPO}/invoicer-chapter2;
+              docker push ${DOCKER_REPO}/invoicer2-chapter2;
           fi
