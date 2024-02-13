@@ -24,7 +24,7 @@ jobs:
           go install --ldflags '-extldflags "-static"' github.com/s7acktrac3/invoicer-chapter2;
           [ ! -e bin ] && mkdir bin;
           cp "${GOPATH_HEAD}/bin/invoicer-chapter2" bin/invoicer;
-          docker build -t ${DOCKER_REPO}/invoicer2-chapter2 .;
+          docker build -t ${DOCKER_REPO}/invoicer-chapter2 .;
     - run:
         name: Testing application
         command: |
