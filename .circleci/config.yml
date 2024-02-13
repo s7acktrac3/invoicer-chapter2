@@ -5,10 +5,10 @@ jobs:
   # You will need to modify the code below to reflect your github account/repo setup
   working_directory: /go/src/github.com/s7acktrac3/invoicer-chapter2
   docker:
-   - image: circleci/golang:1.10
+    - image: circleci/golang:1.10
   steps:
-   - checkout
-   - setup_remote_docker
+    - checkout
+    - setup_remote_docker
 
     - run: echo 'export GOPATH_HEAD="$(echo ${GOPATH}|cut -d ':' -f 1)"' >> $BASH_ENV
     - run: echo 'export GOPATH_BASE="${GOPATH_HEAD}/src/github.com/${CIRCLE_PROJECT_USERNAME}"' >> $BASH_ENV
@@ -17,22 +17,22 @@ jobs:
     - run: mkdir -p "${GOPATH_HEAD}/bin"
     - run: go get github.com/s7acktrac3/invoicer-chapter2
 
-   - run:
-      name: Testing application
-      command: |
-          go test \
-          github.com/s7acktrac3/invoicer-chapter2
+    - run:
+        name: Testing application
+        command: |
+            go test \
+            github.com/s7acktrac3/invoicer-chapter2
 
-   - deploy:
-       command: |
-         if [ "${CIRCLE_BRANCH}" == "master" ]; then
-           docker login -u ${DOCKER_USER} -p ${DOCKER_PASS};
-           go install --ldflags '-extldflags "-static"' \
-           github.com/s7acktrac3/invoicer-chapter2;
-          #  mkdir bin;
-           cp "$GOPATH_HEAD/bin/${CUSTOM_PROJECT_REPONAME}" bin/invoicer;
-           docker build -t ${DOCKER_REPO}/invoicer-chapter2.1 .;
-           docker images --no-trunc | awk '/^app/ {print $3}' | \
-             sudo tee $CIRCLE_ARTIFACTS/docker-image-shasum256.txt;
-           docker push ${DOCKER_REPO}/invoicer-chapter2.1;
-         fi
+    - deploy:
+        command: |
+          if [ "${CIRCLE_BRANCH}" == "master" ]; then
+            docker login -u ${DOCKER_USER} -p ${DOCKER_PASS};
+            go install --ldflags '-extldflags "-static"' \
+            github.com/s7acktrac3/invoicer-chapter2;
+            #  mkdir bin;
+            cp "$GOPATH_HEAD/bin/${CUSTOM_PROJECT_REPONAME}" bin/invoicer;
+            docker build -t ${DOCKER_REPO}/invoicer-chapter2.1 .;
+            docker images --no-trunc | awk '/^app/ {print $3}' | \
+              sudo tee $CIRCLE_ARTIFACTS/docker-image-shasum256.txt;
+            docker push ${DOCKER_REPO}/invoicer-chapter2.1;
+          fi
