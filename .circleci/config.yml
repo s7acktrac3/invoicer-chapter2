@@ -3,29 +3,12 @@ jobs:
  build:
   # Variable expansion in working_directory not supported at this time
   # You will need to modify the code below to reflect your github account/repo setup
-  working_directory: /go/src/github.com/Securing-DevOps/invoicer-chapter2
+  working_directory: /go/src/github.com/s7acktrac3/invoicer-chapter2
   docker:
    - image: circleci/golang:1.10
   steps:
    - checkout
    - setup_remote_docker
-
-  #  - run: 
-  #     name: Setup environment
-  #     command: |
-  #      gb="/src/github.com/${CUSTOM_PROJECT_USERNAME}";
-  #      if [ ${CUSTOM_PROJECT_USERNAME} == 'Securing-DevOps' ]; then
-  #        dr="securingdevops"
-  #      else
-  #        dr=$DOCKER_USER
-  #      fi
-  #      cat >> $BASH_ENV << EOF
-  #      export GOPATH_HEAD="$(echo ${GOPATH}|cut -d ':' -f 1)"
-  #      export GOPATH_BASE="$(echo ${GOPATH}|cut -d ':' -f 1)${gb}"
-  #      export DOCKER_REPO="$dr"
-  #      EOF
-  #  - run: mkdir -p "${GOPATH_BASE}"
-  #  - run: mkdir -p "${GOPATH_HEAD}/bin"
 
   - run: echo 'export GOPATH_HEAD="$(echo ${GOPATH}|cut -d ':' -f 1)"' >> $BASH_ENV
   - run: echo 'export GOPATH_BASE="${GOPATH_HEAD}/src/github.com/${CIRCLE_PROJECT_USERNAME}"' >> $BASH_ENV
@@ -38,7 +21,7 @@ jobs:
       name: Testing application
       command: |
           go test \
-          github.com/${CUSTOM_PROJECT_USERNAME}/${CUSTOM_PROJECT_REPONAME}
+          github.com/s7acktrac3/invoicer-chapter2
 
    - deploy:
        command: |
