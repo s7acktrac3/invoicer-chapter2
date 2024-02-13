@@ -31,10 +31,10 @@ jobs:
             go test \
             github.com/s7acktrac3/invoicer-chapter2
 
-      - deploy:
-          # Push application container to dockerhub
-          command: |
-            if [ "${CIRCLE_BRANCH}" == "master" ]; then
-                docker login -u ${DOCKER_USER} -p ${DOCKER_PASS};
-                docker push ${DOCKER_REPO}/${CIRCLE_PROJECT_REPONAME};
-            fi
+    - deploy:
+        # Push application container to dockerhub
+        command: |
+          if [ "${CIRCLE_BRANCH}" == "master" ]; then
+              docker login -u ${DOCKER_USER} -p ${DOCKER_PASS};
+              docker push ${DOCKER_REPO}/${CIRCLE_PROJECT_REPONAME};
+          fi
