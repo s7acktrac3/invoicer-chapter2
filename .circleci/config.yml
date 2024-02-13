@@ -6,31 +6,34 @@ jobs:
   working_directory: /go/src/github.com/Securing-DevOps/invoicer-chapter2
   docker:
    - image: circleci/golang:1.10
-  resource_class: medium
-  environment:
-   CUSTOM_PROJECT_USERNAME: "s7acktrac3"
-   CUSTOM_PROJECT_REPONAME: "invoicer-chapter2"
   steps:
    - checkout
    - setup_remote_docker
 
-   - run: 
-      name: Setup environment
-      command: |
-       gb="/src/github.com/${CUSTOM_PROJECT_USERNAME}";
-       if [ ${CUSTOM_PROJECT_USERNAME} == 'Securing-DevOps' ]; then
-         dr="securingdevops"
-       else
-         dr=$DOCKER_USER
-       fi
-       cat >> $BASH_ENV << EOF
-       export GOPATH_HEAD="$(echo ${GOPATH}|cut -d ':' -f 1)"
-       export GOPATH_BASE="$(echo ${GOPATH}|cut -d ':' -f 1)${gb}"
-       export DOCKER_REPO="$dr"
-       EOF
-   - run: mkdir -p "${GOPATH_BASE}"
-   - run: mkdir -p "${GOPATH_HEAD}/bin"
-       
+  #  - run: 
+  #     name: Setup environment
+  #     command: |
+  #      gb="/src/github.com/${CUSTOM_PROJECT_USERNAME}";
+  #      if [ ${CUSTOM_PROJECT_USERNAME} == 'Securing-DevOps' ]; then
+  #        dr="securingdevops"
+  #      else
+  #        dr=$DOCKER_USER
+  #      fi
+  #      cat >> $BASH_ENV << EOF
+  #      export GOPATH_HEAD="$(echo ${GOPATH}|cut -d ':' -f 1)"
+  #      export GOPATH_BASE="$(echo ${GOPATH}|cut -d ':' -f 1)${gb}"
+  #      export DOCKER_REPO="$dr"
+  #      EOF
+  #  - run: mkdir -p "${GOPATH_BASE}"
+  #  - run: mkdir -p "${GOPATH_HEAD}/bin"
+
+  - run: echo 'export GOPATH_HEAD="$(echo ${GOPATH}|cut -d ':' -f 1)"' >> $BASH_ENV
+  - run: echo 'export GOPATH_BASE="${GOPATH_HEAD}/src/github.com/${CIRCLE_PROJECT_USERNAME}"' >> $BASH_ENV
+  - run: echo 'export DOCKER_REPO="$(if [ ${CIRCLE_PROJECT_USERNAME} == 'Securing-DevOps' ]; then echo securingdevops; else echo $DOCKER_USER; fi)"' >> $BASH_ENV
+  - run: mkdir -p "${GOPATH_BASE}"
+  - run: mkdir -p "${GOPATH_HEAD}/bin"
+  - run: go get github.com/s7acktrac3/invoicer-chapter2
+
    - run:
       name: Testing application
       command: |
@@ -42,11 +45,11 @@ jobs:
          if [ "${CIRCLE_BRANCH}" == "master" ]; then
            docker login -u ${DOCKER_USER} -p ${DOCKER_PASS};
            go install --ldflags '-extldflags "-static"' \
-           github.com/${CUSTOM_PROJECT_USERNAME}/${CUSTOM_PROJECT_REPONAME};
-           mkdir bin;
+           github.com/s7acktrac3/invoicer-chapter2;
+          #  mkdir bin;
            cp "$GOPATH_HEAD/bin/${CUSTOM_PROJECT_REPONAME}" bin/invoicer;
-           docker build -t ${DOCKER_REPO}/${CUSTOM_PROJECT_REPONAME} .;
+           docker build -t ${DOCKER_REPO}/invoicer-chapter2.1 .;
            docker images --no-trunc | awk '/^app/ {print $3}' | \
              sudo tee $CIRCLE_ARTIFACTS/docker-image-shasum256.txt;
-           docker push ${DOCKER_REPO}/${CUSTOM_PROJECT_REPONAME};
+           docker push ${DOCKER_REPO}/invoicer-chapter2.1;
          fi
