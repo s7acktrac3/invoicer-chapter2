@@ -26,13 +26,11 @@ jobs:
     - deploy:
         command: |
           if [ "${CIRCLE_BRANCH}" == "master" ]; then
+            
             docker login -u ${DOCKER_USER} -p ${DOCKER_PASS};
-            go install --ldflags '-extldflags "-static"' \
-            github.com/s7acktrac3/invoicer-chapter2;
-            #  mkdir bin;
-            cp "$GOPATH_HEAD/bin/${CUSTOM_PROJECT_REPONAME}" bin/invoicer;
+            go install --ldflags '-extldflags "-static"' github.com/s7acktrac3/invoicer-chapter2;
+            cp "$GOPATH_HEAD/bin/invoicer-chapter2" bin/invoicer;
             docker build -t ${DOCKER_REPO}/invoicer-chapter2.1 .;
-            docker images --no-trunc | awk '/^app/ {print $3}' | \
-              sudo tee $CIRCLE_ARTIFACTS/docker-image-shasum256.txt;
+            docker images --no-trunc | awk '/^app/ {print $3}' | sudo tee $CIRCLE_ARTIFACTS/docker-image-shasum256.txt;
             docker push ${DOCKER_REPO}/invoicer-chapter2.1;
           fi
